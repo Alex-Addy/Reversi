@@ -41,5 +41,12 @@ def playerMove(name, board):
 	pass
 	
 def isValid(x, y, board, color):
-	pass
+	# check left        (-x y)
+	# check left-up     (-x -y)
+	# check up          (x -y)
+	# check right-up    (+x -y)
+	# check right       (+x y)
+	# check right-down  (+x + y)
+	# check down        (x +y)
+	# check left-down   (-x +y)
 	
