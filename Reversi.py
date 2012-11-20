@@ -41,20 +41,31 @@ def gameOver(board):
 def playerMove(name, board):
 	pass
 	
-def isValid(base_x, base_y, board, color):
+def validDirs(base_x, base_y, board, color):
 	# returns a tuple of the valid directions
+	directions = []
+	
+	if board[base_x][base_y]: return directions
+	
 	# do a check out from the x, y coordinates using dx and dy values for each direction
-	
-	if board[base_x][base_y]: return False
-	
 	# check left        (-x y)
+	if checkOneWay(base_x, base_y, board, color, -1, 0): directions.append((-1, 0))
 	# check left-up     (-x -y)
+	if checkOneWay(base_x, base_y, board, color, -1, -1): directions.append((-1, -1))
 	# check up          (x -y)
+	if checkOneWay(base_x, base_y, board, color, 0, -1): directions.append((0, -1))
 	# check right-up    (+x -y)
+	if checkOneWay(base_x, base_y, board, color, 1, -1): directions.append((1, -1))
 	# check right       (+x y)
-	# check right-down  (+x + y)
+	if checkOneWay(base_x, base_y, board, color, 1, 0): directions.append((1, 0))
+	# check right-down  (+x +y)
+	if checkOneWay(base_x, base_y, board, color, 1, 1): directions.append((1, 1))
 	# check down        (x +y)
+	if checkOneWay(base_x, base_y, board, color, 0, 1): directions.append((0, 1))
 	# check left-down   (-x +y)
+	if checkOneWay(base_x, base_y, board, color, -1, 1): directions.append((-1, 1))
+	
+	return directions
 
 def checkOneWay(base_x, base_y, board, color, delta_x = 0, delta_y = 0):
 	if delta_x == delta_y == 0:
