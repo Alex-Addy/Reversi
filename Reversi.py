@@ -40,7 +40,9 @@ def gameOver(board):
 def playerMove(name, board):
 	pass
 	
-def isValid(x, y, board, color):
+def isValid(base_x, base_y, board, color):
+	# do a check out from the x, y coordinates using dx and dy values for each direction
+	
 	# check left        (-x y)
 	# check left-up     (-x -y)
 	# check up          (x -y)
@@ -49,4 +51,9 @@ def isValid(x, y, board, color):
 	# check right-down  (+x + y)
 	# check down        (x +y)
 	# check left-down   (-x +y)
+
+def checkOneWay(base_x, base_y, board, delta_x = 0, delta_y = 0):
+	if delta_x == delta_y == 0:
+		raise ValueError("delta_x and delta_y cannot both be zero")
+	pass
 	
