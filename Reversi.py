@@ -9,8 +9,10 @@ b_size = 8
 #  | D D D D D
 #  \/
 
+# the names are useless, don't listen to them
+
 def main():
-	board = [[0 for x in range(b_size)] for y in range(b_size)]
+	board = [[' ' for x in range(b_size)] for y in range(b_size)]
 
 	# setup the board
 	board[b_size/2-1][b_size/2-1] = black
@@ -26,9 +28,35 @@ def main():
 	print "For example to move to A3 you would type 'A3' then press enter."
 	print "It is case insensitive."
 	
-	while(not gameOver()):
-		pass
+	while True:
+		poss = possibleMoves(board)
+		if (not poss{black}) and (not poss{white}):
+			pass
+		
+		else
 
+def possibleMoves(board):
+
+	moves = {black:[], white:[]}
+	
+	open = False
+	for x in range(b_size):
+		if 0 in board[x]:
+			open = True
+			break
+
+	if not open:
+		return moves
+
+	for x in range(b_size):
+		for y in range(b_size):
+			if board[x][y] == 0:
+				if isvalid(x, y, board, black):
+					moves{black}.append((x,y))
+				elif isvalid(x, y, board, white):
+					moves{white}.append((x,y))
+	return True
+		
 def printBoard(board):
 	print '      {0}   {1}   {2}   {3}   {4}   {5}   {6}   {7}  '.format(*[chr(x+ord('A')) for x in range(0, b_size)])
 	print '    ---------------------------------'
@@ -38,7 +66,6 @@ def printBoard(board):
 		print '    ---------------------------------'
 
 def playerMove(name, board, color):
-	
 	# the column is the letter and the row is the number
 	while(True):
 		move = raw_input("{0} move: ".format(name))
