@@ -65,16 +65,17 @@ def printBoard(board):
 		print '| {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} |'.format(*board[x])
 		print '    ---------------------------------'
 
-def playerMove(name, board, color):
+def playerMove(name, poss, color):
 	# the column is the letter and the row is the number
 	while(True):
 		move = raw_input("{0} move: ".format(name))
 		move = move.toUpperCase()
-		if(ord('A') + b_size >= ord(move[0]) >= ord('A')):
-			if(0 <= move[1] <= b_size):
-				directions = validDirs(move[1], ord(move[0]) - ord('A'), board, color)
-				if(len(directions) > 0):
-					return directions
+		col = ord(move)+ord('A')
+		row = move[1]
+		if(ord('A') + b_size >= col >= ord('A')):
+			if(0 <= row <= b_size):
+				if (row, col) in poss{color}:
+					return (row, col)
 				else:
 					print "Invalid location."
 			else:
