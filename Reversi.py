@@ -20,20 +20,23 @@ def main():
 	board[b_size/2-1][b_size/2] = white
 	board[b_size/2][b_size/2-1] = white
 
-	white_player = "Player1"
-	black_player = "Player2"
-	is1turn = True
+	blackturn = True
 	
-	print "Enter moves of the form letter, number."
-	print "For example to move to A3 you would type 'A3' then press enter."
-	print "It is case insensitive."
+	print("Enter moves of the form letter, number.")
+	print("For example to move to A3 you would type 'A3' then press enter.")
+	print("It is case insensitive.")
 	
 	while True:
 		poss = possibleMoves(board)
-		if (not poss{black}) and (not poss{white}):
-			pass
-		
-		else
+		printBoard(board)
+		if (not poss[black]) and (not poss[white]):
+			break
+		else:
+			if blackturn: the_move = playerMove(poss, black)
+			else: the_move = playerMove(poss, white)
+		changeBoard(the_move, board, black if blackturn else white)
+
+	print("Gameover. {0} is the winner.".format(winner(board)))
 
 def possibleMoves(board):
 
@@ -41,7 +44,7 @@ def possibleMoves(board):
 	
 	open = False
 	for x in range(b_size):
-		if 0 in board[x]:
+		if ' ' in board[x]:
 			open = True
 			break
 
@@ -50,38 +53,38 @@ def possibleMoves(board):
 
 	for x in range(b_size):
 		for y in range(b_size):
-			if board[x][y] == 0:
+			if board[x][y] == ' ':
 				if isvalid(x, y, board, black):
-					moves{black}.append((x,y))
+					moves[black].append((x,y))
 				elif isvalid(x, y, board, white):
-					moves{white}.append((x,y))
+					moves[white].append((x,y))
 	return True
 		
 def printBoard(board):
-	print '      {0}   {1}   {2}   {3}   {4}   {5}   {6}   {7}  '.format(*[chr(x+ord('A')) for x in range(0, b_size)])
-	print '    ---------------------------------'
+	print('      A   B   C   D   E   F   G  H  ')
+	print('    ---------------------------------')
 	for x in range(b_size):
-		print x, ' ',
-		print '| {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} |'.format(*board[x])
-		print '    ---------------------------------'
+		print(x, end=" ")
+		print('| {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} |'.format(*board[x]))
+		print('    ---------------------------------')
 
-def playerMove(name, poss, color):
+def playerMove(poss, color):
 	# the column is the letter and the row is the number
 	while(True):
-		move = raw_input("{0} move: ".format(name))
+		move = raw_input("{0}'s move: ".format(color))
 		move = move.toUpperCase()
 		col = ord(move)+ord('A')
 		row = move[1]
 		if(ord('A') + b_size >= col >= ord('A')):
 			if(0 <= row <= b_size):
-				if (row, col) in poss{color}:
+				if (row, col) in poss[color]:
 					return (row, col)
 				else:
-					print "Invalid location."
+					print("Invalid location.")
 			else:
-				print "Invalid number."
+				print("Invalid number.")
 		else:
-			print "Invalid letter."
+			print("Invalid letter.")
 
 def validDirs(base_x, base_y, board, color):
 	# returns a tuple of the valid directions
@@ -111,10 +114,10 @@ def validDirs(base_x, base_y, board, color):
 
 def checkOneWay(base_x, base_y, board, color, delta_x = 0, delta_y = 0):
 	if delta_x == delta_y == 0:
-		raise ValueError("delta_x and delta_y cannot both be zero.")
+		raise False
 
 	if board[base_x + delta_x][base_y + delta_y] == color: return False
-	if board[base_x + delta_x][base_y + delta_y] == 0: return False
+	if board[base_x + delta_x][base_y + delta_y] == ' ': return False
 
 	temp_x = base_x + delta_x
 	temp_y = base_y + delta_y
@@ -122,10 +125,24 @@ def checkOneWay(base_x, base_y, board, color, delta_x = 0, delta_y = 0):
 	other = (black if black == color else white)
 	foundother = False
 	while 0 <= temp_x < b_size and 0 <= temp_y < b_size:
-		if board[temp_x][temp_y] == 0: return False
+		if board[temp_x][temp_y] == ' ': return False
 		elif board[temp_x][temp_y] == other: foundother = True
 		elif board[temp_x][temp_y] == color: return foundother
 		temp_x += delta_x
 		temp_y += delta_y
 	return False
 
+def winner(board):
+	b, w = 0, 0
+	for x in range(b_size):
+		for y in range(b_size):
+			if(board[x][y] == white): w += 1
+			elif(board[x][y] == black): b += 1
+
+	return b if b > w else w
+
+def changeBoard(move, board, color):
+	for dx in [-1, 0, 1]:
+		for dy in [-1, 0, 1]:
+			if checkOneWay(move[0], move[1], board, color, dx, dy):
+				changeOneDir(move[0], move[1], board, color, dx, dy)
