@@ -15,10 +15,10 @@ def main():
 	board = [[' ' for x in range(b_size)] for y in range(b_size)]
 
 	# setup the board
-	board[b_size/2-1][b_size/2-1] = black
-	board[b_size/2][b_size/2] = black
-	board[b_size/2-1][b_size/2] = white
-	board[b_size/2][b_size/2-1] = white
+	board[int(b_size/2)-1][int(b_size/2)-1] = black
+	board[int(b_size/2)][int(b_size/2)] = black
+	board[int(b_size/2)-1][int(b_size/2)] = white
+	board[int(b_size/2)][int(b_size/2)-1] = white
 
 	blackturn = True
 	
@@ -29,7 +29,8 @@ def main():
 	while True:
 		poss = possibleMoves(board)
 		printBoard(board)
-		if (not poss[black]) and (not poss[white]):
+		print(poss)
+		if poss[black] == [] and poss[white] == []:
 			break
 		else:
 			if blackturn: the_move = playerMove(poss, black)
@@ -42,40 +43,41 @@ def possibleMoves(board):
 
 	moves = {black:[], white:[]}
 	
-	open = False
+	isopen = False
 	for x in range(b_size):
 		if ' ' in board[x]:
-			open = True
+			isopen = True
 			break
-
-	if not open:
+	#print("Open is ", isopen)
+	if not isopen:
 		return moves
 
 	for x in range(b_size):
 		for y in range(b_size):
-			if board[x][y] == ' ':
-				if isvalid(x, y, board, black):
+			if board[x][y] != ' ':
+				print(x, ' ', y)
+				if validDirs(x, y, board, black):
 					moves[black].append((x,y))
-				elif isvalid(x, y, board, white):
+				elif validDirs(x, y, board, white):
 					moves[white].append((x,y))
-	return True
+	return moves
 		
 def printBoard(board):
 	print('      A   B   C   D   E   F   G  H  ')
-	print('    ---------------------------------')
+	print('    -------------------------------')
 	for x in range(b_size):
 		print(x, end=" ")
-		print('| {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} |'.format(*board[x]))
-		print('    ---------------------------------')
+		print(' | {0} | {1} | {2} | {3} | {4} | {5} | {6} | {7} |'.format(*board[x]))
+		print('    -------------------------------')
 
 def playerMove(poss, color):
 	# the column is the letter and the row is the number
 	while(True):
-		move = raw_input("{0}'s move: ".format(color))
-		move = move.toUpperCase()
-		col = ord(move)+ord('A')
-		row = move[1]
-		if(ord('A') + b_size >= col >= ord('A')):
+		move = input("{0}'s move: ".format(color))
+		move = move.upper()
+		col = ord(move[0])-ord('A')
+		row = int(move[1])
+		if(b_size >= col >= 0):
 			if(0 <= row <= b_size):
 				if (row, col) in poss[color]:
 					return (row, col)
@@ -90,7 +92,7 @@ def validDirs(base_x, base_y, board, color):
 	# returns a tuple of the valid directions
 	directions = []
 
-	if board[base_x][base_y]: return directions
+	if board[base_x][base_y] == ' ' : return directions
 
 	# do a check out from the x, y coordinates using dx and dy values for each direction
 	# check left (-x y)
@@ -113,8 +115,12 @@ def validDirs(base_x, base_y, board, color):
 	return directions
 
 def checkOneWay(base_x, base_y, board, color, delta_x = 0, delta_y = 0):
-	if delta_x == delta_y == 0:
-		raise False
+	#if delta_x == 0 and delta_y == 0:
+	#	return False
+
+	print(color,"dx", delta_x,"dy", delta_y)
+
+	if base_x + delta_x >= b_size or base_y + delta_y >= b_size: return False
 
 	if board[base_x + delta_x][base_y + delta_y] == color: return False
 	if board[base_x + delta_x][base_y + delta_y] == ' ': return False
@@ -122,12 +128,13 @@ def checkOneWay(base_x, base_y, board, color, delta_x = 0, delta_y = 0):
 	temp_x = base_x + delta_x
 	temp_y = base_y + delta_y
 
-	other = (black if black == color else white)
+	other = (black if white == color else white)
 	foundother = False
+	print("Made it to loop.", other)
 	while 0 <= temp_x < b_size and 0 <= temp_y < b_size:
-		if board[temp_x][temp_y] == ' ': return False
+		if board[temp_x][temp_y] == ' ': return foundother
 		elif board[temp_x][temp_y] == other: foundother = True
-		elif board[temp_x][temp_y] == color: return foundother
+		elif board[temp_x][temp_y] == color: return False
 		temp_x += delta_x
 		temp_y += delta_y
 	return False
@@ -139,10 +146,13 @@ def winner(board):
 			if(board[x][y] == white): w += 1
 			elif(board[x][y] == black): b += 1
 
-	return b if b > w else w
+	return black if b > w else white
 
 def changeBoard(move, board, color):
 	for dx in [-1, 0, 1]:
 		for dy in [-1, 0, 1]:
 			if checkOneWay(move[0], move[1], board, color, dx, dy):
 				changeOneDir(move[0], move[1], board, color, dx, dy)
+
+if __name__ == '__main__':
+	main()
