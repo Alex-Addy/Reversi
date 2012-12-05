@@ -1,5 +1,5 @@
-black = 'B'
-white = 'W'
+black = 'b'#'\u25cf'
+white = 'w'#'\u25cb'
 b_size = 8
 
 # currently the code references the coordinate system as
@@ -73,7 +73,8 @@ def printBoard(board):
 def playerMove(poss, color):
 	# the column is the letter and the row is the number
 	while(True):
-		move = input("{0}'s move: ".format(color))
+		prompt = "{}'s move: ".format(color)
+		move = input(prompt)
 		move = move.upper()
 		col = ord(move[0])-ord('A')
 		row = int(move[1])
@@ -153,6 +154,25 @@ def changeBoard(move, board, color):
 		for dy in [-1, 0, 1]:
 			if checkOneWay(move[0], move[1], board, color, dx, dy):
 				changeOneDir(move[0], move[1], board, color, dx, dy)
+
+def changeOneDir(base_x, base_y, board, color, delta_x = 0, delta_y = 0):
+
+	temp_x = base_x + delta_x
+	temp_y = base_y + delta_y
+
+	other = (black if white == color else white)
+
+	while 0 <= temp_x < b_size and 0 <= temp_y < b_size:
+		if board[temp_x][temp_y] == ' ':
+			return False
+		elif board[temp_x][temp_y] == other:
+			foundother = True
+			board[temp_x][temp_y] = color
+		elif board[temp_x][temp_y] == color:
+			return False
+		temp_x += delta_x
+		temp_y += delta_y
+	return False
 
 if __name__ == '__main__':
 	main()
