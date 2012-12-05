@@ -1,5 +1,5 @@
-black = 'b'#'\u25cf'
-white = 'w'#'\u25cb'
+black = '\u25cf'
+white = '\u25cb'
 b_size = 8
 
 # currently the code references the coordinate system as
@@ -33,9 +33,23 @@ def main():
 		if poss[black] == [] and poss[white] == []:
 			break
 		else:
-			if blackturn: the_move = playerMove(poss, black)
-			else: the_move = playerMove(poss, white)
-		changeBoard(the_move, board, black if blackturn else white)
+			if blackturn:
+				if poss[black]:
+					the_move = playerMove(poss, black)
+					changeBoard(the_move, board, black)
+					blackturn = False
+				else:
+					the_move = playerMove(poss, white)
+					changeBoard(the_move, board, white)
+			else:
+				if poss[white]:
+					the_move = playerMove(poss, white)
+					changeBoard(the_move, board, white)
+					blackturn = True
+				else:
+					the_move = playerMove(poss, black)
+					changeBoard(the_move, board, black)
+				
 
 	print("Gameover. {0} is the winner.".format(winner(board)))
 
@@ -54,8 +68,8 @@ def possibleMoves(board):
 
 	for x in range(b_size):
 		for y in range(b_size):
-			if board[x][y] != ' ':
-				print(x, ' ', y)
+			if board[x][y] == ' ':
+				#print(x, ' ', y)
 				if validDirs(x, y, board, black):
 					moves[black].append((x,y))
 				elif validDirs(x, y, board, white):
@@ -63,7 +77,7 @@ def possibleMoves(board):
 	return moves
 		
 def printBoard(board):
-	print('      A   B   C   D   E   F   G  H  ')
+	print('      A   B   C   D   E   F   G  H ')
 	print('    -------------------------------')
 	for x in range(b_size):
 		print(x, end=" ")
@@ -93,7 +107,7 @@ def validDirs(base_x, base_y, board, color):
 	# returns a tuple of the valid directions
 	directions = []
 
-	if board[base_x][base_y] == ' ' : return directions
+	if board[base_x][base_y] != " ": return directions
 
 	# do a check out from the x, y coordinates using dx and dy values for each direction
 	# check left (-x y)
@@ -119,23 +133,23 @@ def checkOneWay(base_x, base_y, board, color, delta_x = 0, delta_y = 0):
 	#if delta_x == 0 and delta_y == 0:
 	#	return False
 
-	print(color,"dx", delta_x,"dy", delta_y)
-
-	if base_x + delta_x >= b_size or base_y + delta_y >= b_size: return False
-
-	if board[base_x + delta_x][base_y + delta_y] == color: return False
-	if board[base_x + delta_x][base_y + delta_y] == ' ': return False
+	#print("\t", color,"dx", delta_x,"dy", delta_y)
 
 	temp_x = base_x + delta_x
 	temp_y = base_y + delta_y
 
+	if 0 > temp_x or temp_x >= b_size or 0 > temp_y or temp_y >= b_size: return False
+
+	if board[temp_x][temp_y] == ' ': return False
+
 	other = (black if white == color else white)
 	foundother = False
-	print("Made it to loop.", other)
+	#print("\tMade it to loop:", other)
 	while 0 <= temp_x < b_size and 0 <= temp_y < b_size:
-		if board[temp_x][temp_y] == ' ': return foundother
+		#print("\t\tWhere:", temp_x, temp_y, " is: ", board[temp_x][temp_y])
+		if board[temp_x][temp_y] == color: return foundother
 		elif board[temp_x][temp_y] == other: foundother = True
-		elif board[temp_x][temp_y] == color: return False
+		elif board[temp_x][temp_y] == ' ': return False
 		temp_x += delta_x
 		temp_y += delta_y
 	return False
@@ -150,9 +164,15 @@ def winner(board):
 	return black if b > w else white
 
 def changeBoard(move, board, color):
+	#print("Move selected: ", move[0], move[1])
+	board[move[0]][move[1]] = color
+	#print("board[{}][{}]:{}".format(move[0], move[1], board[move[0]][move[1]]))
 	for dx in [-1, 0, 1]:
 		for dy in [-1, 0, 1]:
+			if dy == 0 and dx == 0: continue
+			#print("\t Loop:", dx, dy)
 			if checkOneWay(move[0], move[1], board, color, dx, dy):
+				#print("\t\tNow changing.")
 				changeOneDir(move[0], move[1], board, color, dx, dy)
 
 def changeOneDir(base_x, base_y, board, color, delta_x = 0, delta_y = 0):
@@ -163,16 +183,13 @@ def changeOneDir(base_x, base_y, board, color, delta_x = 0, delta_y = 0):
 	other = (black if white == color else white)
 
 	while 0 <= temp_x < b_size and 0 <= temp_y < b_size:
-		if board[temp_x][temp_y] == ' ':
-			return False
-		elif board[temp_x][temp_y] == other:
-			foundother = True
-			board[temp_x][temp_y] = color
-		elif board[temp_x][temp_y] == color:
-			return False
+		if board[temp_x][temp_y] == ' ': return
+		elif board[temp_x][temp_y] == other: board[temp_x][temp_y] = color
+		elif board[temp_x][temp_y] == color: return
+
 		temp_x += delta_x
 		temp_y += delta_y
-	return False
+	return
 
 if __name__ == '__main__':
 	main()
